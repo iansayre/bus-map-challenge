@@ -32,6 +32,27 @@ class App extends Component {
     dispatch(RouteActions.fetchRoutesIfNeeded(nextBusAPI.ROUTE_LIST));
   }
 
+  componentDidMount() {
+    setTimeout(function() {
+      this.locateAllBuses();
+    }.bind(this), 15000);
+  }
+
+  locateAllBuses() {
+    const { dispatch, routes } = this.props;
+    let vehicleArray = [];
+
+    if (routes['route']) {
+      let busRoutes = routes.route;
+      for (let i = 0; i < busRoutes.length; i++) {
+        const busLocation = dispatch(RouteActions.requestVehicleLocation(`${nextBusAPI.VEHICLE_LOATION}${busRoutes[i].tag}+t=${Date.now()}`));
+        vehicleArray.push(busLocation);
+      }
+
+      dispatch(RouteActions.POPULATE_LOCATION_ARRAY(vehicleArray));
+    }
+  }
+
   routeChange(event) {
     const { dispatch } = this.props;
     dispatch(RouteActions.setRoute(event));
